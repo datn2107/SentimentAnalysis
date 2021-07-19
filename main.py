@@ -29,57 +29,89 @@ def predict(text):
 
 def classify_comment_in_post(url):
     content_list = get_comment_in_post(url)
-    count = {'Very Negative': 0, 'Negative': 0, 'Neutral': 0, 'Positive': 0, 'Very Positive': 0}
+    list_content = {'Negative': [], 'Neutral': [], 'Positive': []}
 
     for content in content_list:
-        count[predict(content)['sentiment']] += 1
+        prediction = predict(content)['sentiment']
+        if "Negative" in prediction:
+            list_content["Negative"].append(content)
+        elif "Neutral" in prediction:
+            list_content["Neutral"].append(content)
+        elif "Positive" in prediction:
+            list_content["Positive"].append(content)
 
-    return count
+    return list_content
+
+
+def clean_old_answer():
+    negative.config(text="Negative : ")
+    list_negative.delete(1.0, tk.END)
+    neutral.config(text="Neutral : ")
+    list_neutral.delete(1.0, tk.END)
+    positive.config(text="Positive : ")
+    list_positive.delete(1.0, tk.END)
 
 
 def print_answer(event):
+    clean_old_answer()
     dict = classify_comment_in_post(entry.get())
-    # dict = {'Very Negative': 12, 'Negative': 123, 'Neutral': 123, 'Positive': 123, 'Very Positive': 123}
+    # dict = {'Negative': ["asdf"], 'Neutral': ["asdf", "Asdf"], 'Positive': ["asdf", "asdf"]}
 
-    very_neg.config(text="Very Negative : " + str(dict['Very Negative']))
-    neg.config(text="Negative : " + str(dict['Negative']))
-    neutral.config(text="Neutral : " + str(dict['Neutral']))
-    pos.config(text="Positive : " + str(dict['Positive']))
-    very_pos.config(text="Very Positive : " + str(dict['Very Positive']))
+    negative.config(text="Negative : " + str(len(dict['Negative'])))
+    for content in dict['Negative']:
+        list_negative.insert(tk.END, content + '\n\n')
+    neutral.config(text="Neutral : " + str(len(dict['Neutral'])))
+    for content in dict['Neutral']:
+        list_neutral.insert(tk.END, content + '\n\n')
+    positive.config(text="Positive : " + str(len(dict['Positive'])))
+    for content in dict['Positive']:
+        list_positive.insert(tk.END, content + '\n\n')
 
 
 root = tk.Tk()
 root.title("We\'re 5 Judgement Bot")
-root.geometry("600x600")
 root.resizable(width=False, height=False)
 root.configure(bg="white")
+
+# back_ground = tk.PhotoImage(file = "background.png")
+# canvas = tk.Canvas(root, width=1000, height=1000)
+# canvas.create_image(0, 0, image = back_ground, anchor = "nw")
+# canvas.grid(rowspan=5, columnspan=3)
 
 logo = Image.open("logo.png")
 logo = ImageTk.PhotoImage(logo)
 logo_label = tk.Label(image=logo, borderwidth=0)
 logo_label.image = logo
-logo_label.pack()
+logo_label.grid(row=0, column=2)
 
-frame = tk.Frame(root, bg="white")
-frame.pack()
+url_text = tk.Label(master=root, text="URL", bg="white", font="Raleway", padx=10, pady=10)
+url_text.grid(row=1, column=2)
+entry = tk.Entry(master=root, font="Raleway", width=50)
+entry.grid(row=2, column=2)
 
-url_text = tk.Label(master=frame, text="URL: ", bg="white", font="Raleway", padx=10, pady=10)
-url_text.grid(row=0, column=0)
-entry = tk.Entry(master=frame, font="Raleway", width=50)
-entry.grid(row=0, column=1)
+empty1 = tk.Label(root, text="____", font="Raleway", fg="white", bg="white")
+empty1.grid(row=3, column=0)
+negative = tk.Label(root, text="Negative : ", font="Raleway", fg="red", bg="white")
+negative.grid(row=3, column=1)
+neutral = tk.Label(root, text="Neutral : ", font="Raleway", fg="#ed9b2b", bg="white")
+neutral.grid(row=3, column=2)
+positive = tk.Label(root, text="Positive : ", font="Raleway", fg="green", bg="white")
+positive.grid(row=3, column=3)
+empty2 = tk.Label(root, text="____", font="Raleway", fg="white", bg="white")
+empty2.grid(row=3, column=4)
 
-very_neg = tk.Label(root, text="", font="Raleway", fg="red", bg="white")
-very_neg.pack()
-neg = tk.Label(root, text="", font="Raleway", fg="red", bg="white")
-neg.pack()
-neutral = tk.Label(root, text="", font="Raleway", fg="#ed9b2b", bg="white")
-neutral.pack()
-pos = tk.Label(root, text="", font="Raleway", fg="green", bg="white")
-pos.pack()
-very_pos = tk.Label(root, text="", font="Raleway", fg="green", bg="white")
-very_pos.pack()
+list_negative = tk.Text(root, font="Raleway", bg="white", width=30)
+list_negative.grid(row=4, column=1)
+list_neutral = tk.Text(root, font="Raleway", bg="white", width=30)
+list_neutral.grid(row=4, column=2)
+list_positive = tk.Text(root, font="Raleway", bg="white", width=30)
+list_positive.grid(row=4, column=3)
 
 root.bind('<Return>', print_answer)
-# root.bind('<Return>', lambda e: print("asdfsadf"))
 
 root.mainloop()
+
+# https://www.rottentomatoes.com/m/black_widow_2021/reviews?type=user
+
+# https://www.facebook.com/windows/posts/10158599769677669
+# https://www.facebook.com/TeslaMotorsCorp/posts/867733636990431?__cft__[0]=AZWNwxZKpPbbBn4kghANiuXlpmT6CHldWbVdheR-eg-Rwnj_hH3hZE1T8vjRu0QMxti9aE3d_z2PFQ1D6kOwV6quGvLT-CuZotQnCI3vlnQVQ0ffMlNXN7SAD9Sw19AXAHg0cXxlUIsERYEbDeCnTunt&__tn__=%2CO%2CP-R

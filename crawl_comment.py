@@ -21,17 +21,28 @@ def get_comment_in_post(url):
     browser.get(url)
     sleep(random.randint(10, 11))
 
+    # try:
     click_link(browser, id="expanding_cta_close_button")
-    click_link(browser,
-               xpath="/html/body/div[1]/div[3]/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div/div/div[1]/div/div[2]/div[2]/form/div/div[2]/div[1]/div/div[3]/span[1]/a")
-    click_link(browser,
-               xpath="/html/body/div[1]/div[3]/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div/div/div[1]/div/div[2]/div[2]/form/div/div[3]/div[1]/div/div/div/div/a")
-    click_link(browser, xpath="/html/body/div[1]/div[3]/div[3]/div/div/div/ul/li[3]/a")
+    print("version 1")
+    open_comment_link = "/html/body/div[1]/div[3]/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div/div/div[1]/div/div[2]/div[2]/form/div/div[2]/div[1]/div/div[3]/span[1]/a"
+    open_all_comment_table_link = "/html/body/div[1]/div[3]/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div/div/div[1]/div/div[2]/div[2]/form/div/div[3]/div[1]/div/div/div/div/a"
+    select_all_comment_option = "/html/body/div[1]/div[3]/div[3]/div/div/div/ul/li[3]/a"
+    expand_comment_link = "/html/body/div[1]/div[3]/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div/div/div[1]/div/div[2]/div[2]/form/div/div[3]/div[2]/div/a/div/span"
+    # except:
+    #     print("version 2")
+    #     open_comment_link = "/html/body/div[1]/div[3]/div[1]/div/div[3]/div/div[1]/div[2]/div/div/div/div[2]/div/div[1]/div/div[2]/div[2]/form/div/div[2]/div[1]/div/div[3]/span[1]/a"
+    #     open_all_comment_table_link = "/html/body/div[1]/div[3]/div[1]/div/div[3]/div/div[1]/div[2]/div/div/div/div[2]/div/div[1]/div/div[2]/div[2]/form/div/div[3]/div[1]/div/div/div/div/a"
+    #     select_all_comment_option = "/html/body/div[1]/div[3]/div[3]/div/div/div/ul/li[3]/a"
+    #     expand_comment_link = "/html/body/div[1]/div[3]/div[1]/div/div[3]/div/div[1]/div[2]/div/div/div/div[2]/div/div[1]/div/div[2]/div[2]/form/div/div[3]/div[2]/div/a/div/span"
+
+    # print(open_comment_link)
+    click_link(browser, xpath=open_comment_link)
+    click_link(browser, xpath=open_all_comment_table_link)
+    click_link(browser, xpath=select_all_comment_option)
 
     while True:
         try:
-            click_link(browser,
-                       xpath="/html/body/div[1]/div[3]/div[1]/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div/div/div[1]/div/div[2]/div[2]/form/div/div[3]/div[2]/div/a/div/span")
+            click_link(browser, xpath=expand_comment_link)
         except:
             print("Already load all comment!")
             break
@@ -39,11 +50,13 @@ def get_comment_in_post(url):
     comment_list = browser.find_elements_by_xpath("//div[@aria-label='Bình luận']")
     content_list = []
 
-    print("Comment: ")
     for comment in comment_list:
         try:
+            comment.find_element_by_class_name("_5v47").click()
+        except:
+            pass
+        try:
             content = comment.find_element_by_class_name("_3l3x").text
-            print(content)
             content_list.append(content)
         except:
             continue
@@ -53,4 +66,5 @@ def get_comment_in_post(url):
 
     return content_list
 
-# get_comment_in_post(r"https://www.facebook.com/baobongda24h.net/posts/2050600804955470?__tn__=-R")
+# get_comment_in_post(r"https://www.facebook.com/windows/posts/10158599769677669")
+
